@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VT Radar — Clientes</title>
+<style>
+:root{--bg:#080a0f;--panel:#0f131b;--panel2:#121722;--line:#252c39;--text:#f6f7fb;--muted:#929aaa;--accent:#8b5cf6;--green:#25d366}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#24144b 0,transparent 42%),#080a0f}
+.login-box{width:min(420px,100%);background:rgba(15,19,27,.96);border:1px solid #2b3240;border-radius:22px;padding:32px;box-shadow:0 30px 90px #0008}
+.logo{font-size:27px;font-weight:900;letter-spacing:-.7px}.logo span{color:#a579ff}.login-sub{color:var(--muted);font-size:13px;line-height:1.6;margin:8px 0 26px}
+.field{margin:15px 0}.field label{display:block;font-size:12px;color:#aeb6c6;margin-bottom:7px}.field input,.field select{width:100%;background:#0b0f16;border:1px solid #2b3240;color:#fff;border-radius:11px;padding:12px;outline:none}.field input:focus{border-color:#8b5cf6}
+.primary{width:100%;border:0;border-radius:11px;padding:13px;background:linear-gradient(135deg,#8b5cf6,#7040e7);color:#fff;font-weight:850}.primary:hover{filter:brightness(1.08)}
+.login-note{font-size:11px;color:#777f90;margin-top:13px;text-align:center}.error{font-size:12px;color:#ff7777;margin:10px 0;display:none}
+.app{min-height:100vh}.topbar{height:68px;background:#0b0e14;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:20}.brand{font-size:21px;font-weight:900}.brand span{color:#9d70ff}.top-actions{display:flex;align-items:center;gap:9px}.user-pill,.ghost{border:1px solid var(--line);background:#111620;color:#c7cdd8;border-radius:10px;padding:8px 11px;font-size:11px}.ghost:hover{background:#171d28;color:#fff}
+.layout{display:grid;grid-template-columns:330px 1fr;min-height:calc(100vh - 68px)}
+aside{background:#0b0e14;border-right:1px solid var(--line);padding:22px;overflow:auto}aside h2{font-size:18px;margin:0 0 7px}.small{font-size:12px;color:var(--muted);line-height:1.55}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check{display:flex;gap:8px;align-items:center;color:#b8bfcc;font-size:12px}.check input{width:auto}
+main{padding:24px;overflow:auto;background:radial-gradient(circle at 75% 0,#1c1234 0,transparent 28%),#080a0f}.toolbar{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-bottom:16px}.toolbar h1{font-size:23px;margin:0 0 4px}.stats{display:flex;gap:8px}.stat{background:#10141c;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:11px;color:#8f98a9}.stat b{font-size:16px;color:#fff;margin-right:4px}
+.map{height:350px;border-radius:18px;border:1px solid #2b3240;overflow:hidden;position:relative;background:#17221b;box-shadow:0 14px 45px #0005}.map:before{content:"";position:absolute;inset:-80px;background:linear-gradient(26deg,transparent 0 45%,#3b4841 46% 47%,transparent 48%),linear-gradient(108deg,transparent 0 54%,#34413c 55% 56%,transparent 57%),linear-gradient(165deg,transparent 0 68%,#30403a 69% 70%,transparent 71%);opacity:.85;transform:rotate(-5deg)}.map:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,#101b1599,#0c151080)}
+.mapui{position:absolute;z-index:2;inset:0}.maptop{position:absolute;left:14px;top:14px;background:#080b12e8;border:1px solid #303747;padding:9px 12px;border-radius:10px;font-size:12px}.maplegend{position:absolute;left:14px;bottom:14px;background:#080b12e8;border:1px solid #303747;padding:9px 12px;border-radius:10px;font-size:11px;color:#adb5c4}.gps{position:absolute;right:14px;top:14px;border:1px solid #303747;background:#0a0d14e8;color:white;border-radius:10px;padding:9px 11px}.pin{position:absolute;width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;border:3px solid #fff;box-shadow:0 7px 18px #0008}.pin span{transform:rotate(45deg);font-size:15px}.p1{left:25%;top:39%;background:#8b5cf6}.p2{left:51%;top:28%;background:#25c99a}.p3{left:69%;top:56%;background:#ffad3b}.p4{left:42%;top:70%;background:#ef5b8f}.me{position:absolute;left:51%;top:47%;width:17px;height:17px;border:4px solid white;background:#39a7ff;border-radius:50%;box-shadow:0 0 0 10px #39a7ff33}
+.filters{display:flex;gap:8px;margin:15px 0;overflow:auto}.filter{white-space:nowrap;background:#111620;border:1px solid #272e3d;color:#aeb6c8;padding:8px 11px;border-radius:9px;font-size:11px}.filter.active{background:#1a1430;border-color:#6f49bd;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:13px}.card{background:#0f131b;border:1px solid #252c39;border-radius:16px;overflow:hidden;transition:.18s}.card:hover{transform:translateY(-2px);border-color:#393f4d}.photo{height:142px;background-size:cover;background-position:center}.body{padding:15px}.title{display:flex;justify-content:space-between;gap:8px}.title h3{font-size:16px;margin:0 0 4px}.stars{font-size:12px;color:#ffc75a;white-space:nowrap}.meta{font-size:12px;color:#929aaa;line-height:1.7;margin-top:9px}.address{color:#d8dce5}.tag{display:inline-block;color:#69e3aa;background:#143529;padding:5px 8px;border-radius:7px;font-size:10px;font-weight:800;margin:10px 0}.actions{display:flex;gap:7px}.actions button{flex:1;padding:10px;border-radius:9px;border:1px solid #2b3240;background:#171c25;color:#fff;font-size:11px;font-weight:750}.actions .go{background:#8b5cf6;border-color:#8b5cf6}.actions .wa{color:#6ee89a;border-color:#24593a}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:40;padding:18px}.modal.open{display:flex}.panel{width:min(980px,100%);max-height:94vh;overflow:auto;background:#0d1118;border:1px solid #303747;border-radius:20px;box-shadow:0 30px 100px #000}.panelhead{padding:17px 19px;border-bottom:1px solid #242b38;display:flex;justify-content:space-between;align-items:center}.close{background:#171c25;border:1px solid #303747;color:#fff;border-radius:9px;padding:7px 11px}
+.preview{padding:20px}.site-preview{background:#fff;color:#18202b;border-radius:15px;overflow:hidden}.site-nav{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;border-bottom:1px solid #e7e9ee;background:#fff}.site-brand{font-weight:900;font-size:18px}.site-nav a{color:#4c5562;text-decoration:none;font-size:12px;margin-left:18px}.site-hero{min-height:330px;padding:40px 34px;display:flex;align-items:end;background-size:cover;background-position:center;position:relative;color:#fff}.site-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 25%,#071018e8)}.site-hero-content{position:relative;z-index:1;max-width:720px}.site-hero h1{font-size:40px;line-height:1.05;margin:0 0 9px;letter-spacing:-1px}.site-hero p{margin:0;color:#e3e7ed}.site-content{padding:25px 28px}.site-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.site-box{border:1px solid #e2e5ea;border-radius:12px;padding:16px;background:#fafbfc}.site-box b{display:block;font-size:10px;color:#7b8490;text-transform:uppercase;margin-bottom:7px}.site-box span{font-size:13px}.site-wa{display:inline-flex;margin-top:18px;padding:12px 17px;border-radius:10px;background:var(--green);color:#fff;text-decoration:none;font-weight:800;font-size:13px}.site-footer{padding:18px 28px;background:#f4f5f7;color:#717987;font-size:11px}
+.modal-actions{display:flex;gap:8px;padding:0 20px 20px}.modal-actions button{flex:1;text-align:center;padding:11px;border-radius:10px;border:1px solid #303747;background:#171c25;color:#fff;font-size:12px;font-weight:750}.modal-actions .main{background:#8b5cf6;border-color:#8b5cf6}
+@media(max-width:850px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line)}.map{height:270px}.site-grid{grid-template-columns:1fr}.site-hero h1{font-size:31px}.toolbar{align-items:start;flex-direction:column}.stats{width:100%}}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+#realMap{position:absolute;inset:0;z-index:1}
+.map .mapui{z-index:5;pointer-events:none}.maptop,.gps,.maplegend{pointer-events:auto}
+.leaflet-control-attribution{font-size:9px!important}
+.loading{padding:25px;text-align:center;color:#929aaa;border:1px dashed #303747;border-radius:14px}
+.result-note{font-size:11px;color:#727b8b;margin:12px 0}
+.status-site{color:#6ee89a}.status-nosite{color:#ffbd69}
+</style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<section id="login" class="login hidden">
+<div class="login-box">
+<div class="logo"><span>VT</span> Radar</div>
+<div class="login-sub">Painel privado para encontrar oportunidades e criar sites para negócios locais.</div>
+<div class="field"><label>Usuário</label><input id="loginUser" autocomplete="username" placeholder="Digite seu usuário"></div>
+<div class="field"><label>Senha</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')entrar()"></div>
+<div id="loginError" class="error">Usuário ou senha incorretos.</div>
+<button class="primary" onclick="entrar()">Entrar no painel</button>
+<div class="login-note">Acesso local · usuário: <b>VT</b> · senha: <b>1234</b></div>
+</div>
+</section>
+<section id="app" class="app hidden">
+<header class="topbar"><div class="brand"><span>VT</span> Radar de Clientes</div><div class="top-actions"><div class="user-pill">● Mapa real</div></div></header>
+<div class="layout">
+<aside><h2>Encontrar clientes</h2><p class="small">Pesquise negócios e abra a ficha para gerar uma página com endereço, serviços e contato.</p>
+<div class="field"><label>O que você procura?</label><input id="tipo" placeholder="Barbearia, pizzaria, academia..." onkeydown="if(event.key==='Enter')buscar()"></div>
+<div class="field"><label>Onde?</label><input id="regiao" value="Caraguatatuba, SP"></div>
+<div class="row"><div class="field"><label>Raio</label><select><option>2 km</option><option>5 km</option><option>10 km</option><option>25 km</option></select></div><div class="field"><label>Ordenar</label><select><option>Mais próximos</option><option>Melhor avaliação</option><option>Mais oportunidades</option></select></div></div>
+<div class="field"><label class="check"><input id="only" type="checkbox" checked> Mostrar somente negócios sem site</label></div>
+<button class="primary" onclick="buscar()">⌕ Encontrar negócios</button>
+<hr style="border:0;border-top:1px solid #242b38;margin:22px 0"><p class="small">💡 <b style="color:#fff">VT:</b> a ficha do negócio já fica pronta para você transformar em uma landing page profissional.</p></aside>
+<main><div class="toolbar"><div><h1>Mapa de oportunidades</h1><div class="small">Região selecionada · visual de demonstração</div></div><div class="stats"><div class="stat"><b id="n">8</b> encontrados</div><div class="stat"><b>8</b> sem site</div></div></div>
+<div class="map"><div id="realMap"></div><div class="mapui"><div class="maptop">📍 Mapa real · OpenStreetMap</div><button class="gps" onclick="gps()">◎ Minha localização</button><div class="maplegend">Arraste e use +/− para navegar · dados de mapa © OpenStreetMap</div></div></div>
+<div class="filters"><button class="filter active" onclick="filtrar('')">Todos</button><button class="filter" onclick="filtrar('Barbearia')">💈 Barbearias</button><button class="filter" onclick="filtrar('Hamburgueria')">🍔 Restaurantes</button><button class="filter" onclick="filtrar('Cabeleireiro')">✂️ Salões</button><button class="filter" onclick="filtrar('Café')">☕ Cafés</button><button class="filter" onclick="filtrar('Academia')">🏋️ Academias</button></div>
+<div id="grid" class="grid"></div></main></div></section>
+<div id="modal" class="modal" onclick="if(event.target===this)fechar()"><div class="panel"><div class="panelhead"><div><b>Gerador de site VT</b><div class="small">Prévia da página pronta para o cliente</div></div><button class="close" onclick="fechar()">✕</button></div><div id="preview" class="preview"></div><div class="modal-actions"><button class="main" onclick="abrirSite()">Abrir site completo</button><button onclick="baixarSite()">Baixar HTML</button></div></div></div>
+<script>
+let data=[], current=null, map=null, markers=[], userMarker=null, searchController=null;
+const fallbackPlaces=[
+ {name:"Praça de demonstração",cat:"Local",street:"Pesquise uma cidade ou categoria",addr:"",phone:"",website:"",lat:-23.795,lon:-45.414}
+];
+
+function iconFor(x){
+ const s=((x.cat||"")+" "+(x.name||"")).toLowerCase();
+ if(s.includes("barbear")||s.includes("cabeleire")||s.includes("salão")) return "✂️";
+ if(s.includes("restaur")||s.includes("hamburg")||s.includes("pizza")||s.includes("lanch")) return "🍔";
+ if(s.includes("café")||s.includes("coffee")) return "☕";
+ if(s.includes("academ")||s.includes("fitness")||s.includes("gym")) return "🏋️";
+ if(s.includes("pet")) return "🐾";
+ if(s.includes("auto")||s.includes("mecân")) return "🚗";
+ return "📍";
+}
+function escapeHTML(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function phoneLink(phone){let n=(phone||"").replace(/\D/g,""); if(n.length===10||n.length===11)n="55"+n; return n?`https://wa.me/${n}`:"";}
+function initMap(){
+ if(map) return;
+ map=L.map("realMap",{zoomControl:true}).setView([-23.795,-45.414],12);
+ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+}
+function clearMarkers(){markers.forEach(m=>m.remove());markers=[];}
+function drawMarkers(){
+ initMap(); clearMarkers();
+ data.forEach((x,i)=>{
+   if(!Number.isFinite(x.lat)||!Number.isFinite(x.lon)) return;
+   const m=L.marker([x.lat,x.lon]).addTo(map);
+   m.bindPopup(`<b>${escapeHTML(x.name)}</b><br>${escapeHTML(x.street||x.addr||"Endereço não cadastrado")}<br><button onclick="criar(${i})" style="margin-top:7px">Abrir ficha</button>`);
+   m.on("click",()=>{current=x});
+   markers.push(m);
+ });
+ if(data.length){
+   const pts=data.filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)).map(x=>[x.lat,x.lon]);
+   if(pts.length) map.fitBounds(pts,{padding:[30,30],maxZoom:14});
+ }
+}
+async function overpassQuery(query){
+  const endpoints=[
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter"
+  ];
+  let lastError=null;
+  for(const endpoint of endpoints){
+    try{
+      const url=endpoint+"?data="+encodeURIComponent(query);
+      const r=await fetch(url,{method:"GET",headers:{"Accept":"application/json"},signal:searchController?.signal});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      return await r.json();
+    }catch(e){
+      if(e.name==="AbortError") throw e;
+      lastError=e;
+    }
+  }
+  throw lastError||new Error("Nenhum servidor Overpass respondeu");
+}
+
+async function buscar(){
+ initMap();
+ const region=document.getElementById("regiao").value.trim();
+ const q=document.getElementById("tipo").value.trim();
+ if(!region){alert("Digite uma cidade, bairro ou endereço.");return}
+ document.getElementById("grid").innerHTML='<div class="loading">🔎 Procurando negócios reais…</div>';
+ try{
+   const geo=await geocode(region);
+   if(!geo) throw new Error("Localização não encontrada");
+   const bbox=geo.boundingbox.map(Number); // south,north,west,east
+   map.setView([Number(geo.lat),Number(geo.lon)],13);
+   const query=buildBBoxQuery(bbox,q);
+   if(searchController) searchController.abort();
+   searchController=new AbortController();
+   const res=await fetch("https://overpass.kumi.systems/api/interpreter",{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:query,signal:searchController.signal});
+   if(!res.ok) throw new Error("Serviço de mapas indisponível");
+   const json=await res.json();
+   data=(json.elements||[]).map(normalizeElement).filter(x=>x.name && Number.isFinite(x.lat)&&Number.isFinite(x.lon));
+   // Keep businesses with useful contact/location data first, but never invent fields.
+   data.sort((a,b)=>((b.phone?2:0)+(b.website?1:0))-((a.phone?2:0)+(a.website?1:0)));
+   data=data.slice(0,100);
+   render(data); drawMarkers();
+   if(!data.length) document.getElementById("grid").innerHTML='<div class="loading">Nenhum negócio foi encontrado nessa área. Tente aumentar a região ou pesquisar uma categoria específica.</div>';
+ }catch(e){
+   if(e.name==="AbortError") return;
+   console.error(e);
+   document.getElementById("grid").innerHTML='<div class="loading">⚠️ Não consegui consultar os dados agora.<br><br>Tente novamente ou pesquise uma cidade maior, como <b>Caraguatatuba, SP</b>.</div>';
+ }
+}
+async function geocode(region){
+ const url="https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=br&q="+encodeURIComponent(region);
+ const r=await fetch(url,{headers:{"Accept":"application/json"}});
+ if(!r.ok)return null;
+ const j=await r.json();
+ return j[0]||null;
+}
+function buildBBoxQuery(bbox,q){
+ const south=bbox[0],north=bbox[1],west=bbox[2],east=bbox[3];
+ const s=q.toLowerCase();
+ let filters;
+ if(/barbear|cabeleire|salão|beleza/.test(s)) filters=`nwr[\"name\"](${south},${west},${north},${east})[\"shop\"~\"hairdresser|beauty\"]`;
+ else if(/pizza/.test(s)) filters=`nwr[\"name\"](${south},${west},${north},${east})[\"amenity\"=\"restaurant\"][\"cuisine\"~\"pizza\",i]`;
+ else if(/restaur|hamburg|lanch/.test(s)) filters=`nwr[\"name\"](${south},${west},${north},${east})[\"amenity\"~\"restaurant|fast_food\"]`;
+ else if(/café|cafe|coffee/.test(s)) filters=`nwr[\"name\"](${south},${west},${north},${east})[\"amenity\"=\"cafe\"]`;
+ else if(/academ|fitness|gym/.test(s)) filters=`nwr[\"name\"](${south},${west},${north},${east})[\"leisure\"=\"fitness_centre\"]`;
+ else if(/pet/.test(s)) filters=`nwr[\"name\"](${south},${west},${north},${east})[\"shop\"=\"pet\"]`;
+ else if(/auto|mecân|oficina/.test(s)) filters=`nwr[\"name\"](${south},${west},${north},${east})[\"shop\"~\"car_repair|car\"]`;
+ else filters=`nwr[\"name\"](${south},${west},${north},${east})[\"shop\"];nwr[\"name\"](${south},${west},${north},${east})[\"amenity\"];nwr[\"name\"](${south},${west},${north},${east})[\"craft\"];`;
+ return `[out:json][timeout:45];(${filters};);out center tags;`;
+}
+function normalizeElement(e){
+ const t=e.tags||{},lat=e.lat??e.center?.lat,lon=e.lon??e.center?.lon;
+ const street=[t["addr:street"],t["addr:housenumber"]].filter(Boolean).join(", ");
+ const city=[t["addr:suburb"],t["addr:city"]].filter(Boolean).join(", ");
+ const phone=t.phone||t["contact:phone"]||"";
+ const website=t.website||t["contact:website"]||"";
+ const cat=t.shop||t.amenity||t.office||t.craft||t.leisure||"Negócio local";
+ return {id:e.id,name:t.name,cat:cat.replace(/_/g," "),icon:iconFor({cat,name:t.name}),rating:t.stars||"—",street:street||"Endereço não cadastrado no mapa",addr:city||"",phone,website,img:"",desc:t.description||`${cat.replace(/_/g," ")} cadastrado no OpenStreetMap.`,lat:Number(lat),lon:Number(lon)};
+}
+function render(items=data){
+ const grid=document.getElementById("grid");grid.innerHTML="";
+ document.getElementById("n").textContent=items.length;
+ if(!items.length)return;
+ items.forEach((x,i)=>{
+  const site=x.website?`<span class="tag status-site">SITE CADASTRADO</span>`:`<span class="tag status-nosite">SEM SITE CADASTRADO</span>`;
+  const wa=x.phone?`<button class="wa" onclick="whatsapp(${i})">WhatsApp</button>`:`<button disabled title="Telefone não cadastrado no mapa">WhatsApp</button>`;
+  grid.innerHTML+=`<article class="card"><div class="body"><div class="title"><div><h3>${escapeHTML(x.icon)} ${escapeHTML(x.name)}</h3><div class="small">${escapeHTML(x.cat)}</div></div>${x.rating!=="—"?`<div class="stars">★ ${escapeHTML(x.rating)}</div>`:""}</div><div class="meta"><span class="address">📍 ${escapeHTML(x.street)}</span><br>${escapeHTML(x.addr)}${x.phone?`<br>📞 ${escapeHTML(x.phone)}`:""}<br>💬 ${escapeHTML(x.desc)}</div>${site}<div class="actions"><button class="go" onclick="criar(${i})">Criar site</button>${wa}</div></div></article>`;
+ });
+}
+function filtrar(cat){
+ if(!cat){render(data);return}
+ render(data.filter(x=>String(x.cat).toLowerCase().includes(cat.toLowerCase())));
+}
+function whatsapp(i){const u=phoneLink(data[i].phone); if(u)window.open(u,"_blank","noopener"); else alert("Este negócio não tem WhatsApp/telefone cadastrado no OpenStreetMap.")}
+function entrar(){const u=document.getElementById("loginUser").value.trim(),p=document.getElementById("loginPass").value;if(u.toLowerCase()==="vt"&&p==="1234"){localStorage.setItem("vtLogged","1");document.getElementById("login").classList.add("hidden");document.getElementById("app").classList.remove("hidden")}else document.getElementById("loginError").style.display="block"}
+function sair(){localStorage.removeItem("vtLogged");location.reload()}
+if(localStorage.getItem("vtLogged")==="1"){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+}else{
+  document.getElementById("login").classList.remove("hidden");
+  document.getElementById("app").classList.add("hidden");
+}
+function render(items=data){const grid=document.getElementById("grid");grid.innerHTML="";document.getElementById("n").textContent=items.length;items.forEach(x=>{const i=data.indexOf(x);grid.innerHTML+=`<article class="card"><div class="photo" style="background-image:url('${x.img}')"></div><div class="body"><div class="title"><div><h3>${x.icon} ${x.name}</h3><div class="small">${x.cat}</div></div><div class="stars">★ ${x.rating}</div></div><div class="meta"><span class="address">📍 ${x.street}</span><br>${x.addr}<br>📞 ${x.phone}<br>💬 ${x.desc}</div><span class="tag">SEM SITE</span><div class="actions"><button class="go" onclick="criar(${i})">Criar site</button><button class="wa" onclick="whatsapp(${i})">WhatsApp</button></div></div></article>`})}
+function filtrarBuscaLocal(){let q=document.getElementById("tipo").value.trim().toLowerCase();render(q?data.filter(x=>(x.cat+" "+x.name+" "+x.desc+" "+x.street).toLowerCase().includes(q)):data)}
+function filtrarLocal(cat){document.querySelectorAll(".filter").forEach(b=>b.classList.remove("active"));render(cat?data.filter(x=>x.cat===cat):data)}
+function whatsappFallback(i){const u=phoneLink(data[i].phone);if(u)window.open(u,"_blank","noopener");else alert("Este negócio não tem telefone cadastrado no OpenStreetMap.")}
+function criar(i){
+ current=data[i]; const x=current;
+ const wa=phoneLink(x.phone);
+ document.getElementById("preview").innerHTML=`<div class="site-preview">
+ <nav class="site-nav"><div class="site-brand">${escapeHTML(x.name)}</div><div><a href="#sobre">Sobre</a><a href="#contato">Contato</a></div></nav>
+ <section class="site-hero" style="${x.img?`background-image:url('${x.img}')`:"background:#151922"}"><div class="site-hero-content"><div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">Negócio local</div><h1>${escapeHTML(x.name)}</h1><p>${escapeHTML(x.street)} · ${escapeHTML(x.addr)}</p></div></section>
+ <section class="site-content" id="sobre"><h2 style="margin:0 0 8px;font-size:24px">Sobre o negócio</h2><p style="color:#697280;line-height:1.6;margin-top:0">${escapeHTML(x.desc)}</p>
+ <div class="site-grid"><div class="site-box"><b>Endereço</b><span>${escapeHTML(x.street)}<br>${escapeHTML(x.addr)}</span></div><div class="site-box"><b>Telefone</b><span>${escapeHTML(x.phone||"Não cadastrado")}</span></div><div class="site-box"><b>Site atual</b><span>${x.website?`<a href="${escapeHTML(x.website)}" target="_blank">Abrir site</a>`:"Nenhum site cadastrado no mapa"}</span></div></div>
+ ${wa?`<a class="site-wa" href="${wa}" target="_blank" rel="noopener">Falar pelo WhatsApp</a>`:"<span style='display:inline-block;margin-top:18px;color:#777'>WhatsApp não cadastrado</span>"}</section>
+ <footer class="site-footer" id="contato">📍 ${escapeHTML(x.street)} · ${escapeHTML(x.addr)}${x.phone?` · 📞 ${escapeHTML(x.phone)}`:""}</footer></div>`;
+ document.getElementById("modal").classList.add("open");
+}
+function abrirSite(){const html=gerarHtml(current),blob=new Blob([html],{type:"text/html;charset=utf-8"});window.open(URL.createObjectURL(blob),"_blank")}
+function baixarSite(){const html=gerarHtml(current),blob=new Blob([html],{type:"text/html;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=current.name.toLowerCase().replace(/[^a-z0-9]+/gi,"-")+".html";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function gerarHtml(x){
+ const wa=phoneLink(x.phone);
+ return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHTML(x.name)}</title><style>body{margin:0;font-family:Inter,Arial,sans-serif;color:#18202b}header{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 7%;border-bottom:1px solid #e7e9ee}header b{font-size:18px}header a{color:#4d5662;text-decoration:none;margin-left:18px;font-size:13px}.hero{min-height:48vh;display:flex;align-items:end;position:relative;color:#fff;padding:8%;background:linear-gradient(135deg,#111722,#252d3a)}.hero div{position:relative;z-index:1}.hero h1{font-size:clamp(35px,6vw,62px);margin:8px 0}.content{max-width:1000px;margin:auto;padding:55px 7%}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{border:1px solid #e1e5eb;border-radius:13px;padding:18px}.card b{display:block;color:#7b8490;font-size:11px;text-transform:uppercase;margin-bottom:7px}.wa{display:inline-block;margin-top:25px;background:#25d366;color:#fff;text-decoration:none;padding:13px 18px;border-radius:10px;font-weight:800}.foot{padding:20px 7%;background:#f4f5f7;color:#717987;font-size:12px}@media(max-width:700px){.cards{grid-template-columns:1fr}header{padding:0 5%}.hero{padding:7% 5%}.content{padding:40px 5%}}</style></head><body><header><b>${escapeHTML(x.name)}</b><nav><a href="#sobre">Sobre</a><a href="#contato">Contato</a></nav></header><section class="hero"><div><small>${escapeHTML(x.cat)}${x.rating&&x.rating!=="—"?` · ⭐ ${escapeHTML(x.rating)}`:""}</small><h1>${escapeHTML(x.name)}</h1><p>${escapeHTML(x.street)} · ${escapeHTML(x.addr)}</p></div></section><main class="content" id="sobre"><h2>Sobre</h2><p>${escapeHTML(x.desc)}</p><div class="cards"><div class="card"><b>Endereço</b>${escapeHTML(x.street)}<br>${escapeHTML(x.addr)}</div><div class="card"><b>Telefone</b>${escapeHTML(x.phone||"Não cadastrado")}</div><div class="card"><b>Site atual</b>${x.website?`<a href="${escapeHTML(x.website)}" target="_blank">Abrir site</a>`:"Nenhum site cadastrado"}</div></div>${wa?`<a class="wa" href="${wa}" target="_blank" rel="noopener">Falar pelo WhatsApp</a>`:""}</main><footer class="foot" id="contato">${escapeHTML(x.street)} · ${escapeHTML(x.addr)}${x.phone?` · ${escapeHTML(x.phone)}`:""}</footer></body></html>`;
+}
+function fechar(){document.getElementById("modal").classList.remove("open")}
+function gps(){
+ if(!navigator.geolocation){
+   alert("Seu navegador não disponibiliza localização.");
+   carregarEstabelecimentos(-23.795,-45.414,"Caraguatatuba, SP");
+   return;
+ }
+ navigator.geolocation.getCurrentPosition(async pos=>{
+   initMap();
+   const lat=pos.coords.latitude,lon=pos.coords.longitude;
+   if(userMarker) userMarker.remove();
+   userMarker=L.circleMarker([lat,lon],{radius:9,color:"#fff",weight:3,fillColor:"#168cff",fillOpacity:1})
+     .addTo(map).bindPopup("📍 Você está aqui").openPopup();
+   map.setView([lat,lon],14);
+   document.getElementById("regiao").value="Minha localização";
+   await carregarEstabelecimentos(lat,lon,"Minha localização");
+ },err=>{
+   const msg={1:"Permissão de localização negada. Libere Localização no cadeado do navegador.",2:"Não foi possível determinar sua localização.",3:"A localização demorou demais. Tente novamente."}[err.code]||"Não foi possível obter sua localização.";
+   alert(msg);
+   carregarEstabelecimentos(-23.795,-45.414,"Caraguatatuba, SP");
+ },{enableHighAccuracy:false,timeout:15000,maximumAge:60000});
+}
+
+async function carregarEstabelecimentos(lat,lon,label){
+ initMap();
+ document.getElementById("grid").innerHTML='<div class="loading">🔎 Carregando estabelecimentos próximos…</div>';
+ const bbox=[lat-0.045,lat+0.045,lon-0.045,lon+0.045];
+ try{
+   const q=document.getElementById("tipo").value.trim();
+   const query=buildBBoxQuery(bbox,q);
+   if(searchController) searchController.abort();
+   searchController=new AbortController();
+   const json=await overpassQuery(query);
+   data=(json.elements||[]).map(normalizeElement).filter(x=>x.name&&Number.isFinite(x.lat)&&Number.isFinite(x.lon));
+   data.sort((a,b)=>((b.phone?2:0)+(b.website?1:0))-((a.phone?2:0)+(a.website?1:0)));
+   data=data.slice(0,100);
+   render(data);
+   drawMarkers();
+   if(userMarker){userMarker.addTo(map);userMarker.openPopup();}
+   if(!data.length) document.getElementById("grid").innerHTML='<div class="loading">Nenhum estabelecimento encontrado nessa área. Digite uma categoria ou tente novamente.</div>';
+ }catch(e){
+   console.error(e);
+   if(userMarker) userMarker.addTo(map).openPopup();
+   document.getElementById("grid").innerHTML='<div class="loading">⚠️ O servidor de estabelecimentos bloqueou a consulta agora. Sua localização foi marcada no mapa. Tente novamente em alguns segundos.</div>';
+ }
+}
+
+if(location.protocol==="file:"){
+  const note=document.createElement("div");
+  note.style="position:fixed;left:12px;bottom:12px;z-index:9999;background:#111620;color:#cbd2df;border:1px solid #303747;border-radius:10px;padding:10px 12px;font:11px system-ui;max-width:360px";
+  note.innerHTML="ℹ️ GPS: para funcionar com mais confiabilidade, abra este arquivo por <b>localhost</b> ou HTTPS.";
+  document.body.appendChild(note);
+  setTimeout(()=>note.remove(),9000);
+}
+initMap();
+setTimeout(()=>gps(),700);
+</script>
+</body>
+</html>
